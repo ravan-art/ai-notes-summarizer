@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Summarizer - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fab fa-youtube text-danger"></i> YouTube Video Summarizer
+                </h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="video_url" class="form-label">YouTube Video URL</label>
+                        <input type="url" class="form-control" id="video_url" name="video_url" 
+                               placeholder="https://www.youtube.com/watch?v=..." required>
+                        <small class="text-muted">Paste the YouTube video link here</small>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-magic"></i> Summarize Video
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

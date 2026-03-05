@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Generator - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-2">
+            <i class="fas fa-file-pdf" style="color: #dc3545;"></i> PDF Generator
+        </h1>
+        <p class="lead text-muted">Create professional PDF documents instantly</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card glass">
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-heading"></i> Document Title
+                            </label>
+                            <input type="text" 
+                                   name="title" 
+                                   class="form-control form-control-lg" 
+                                   placeholder="Enter document title..."
+                                   required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="fas fa-align-left"></i> Content
+                            </label>
+                            <textarea name="content" 
+                                      class="form-control" 
+                                      rows="15" 
+                                      placeholder="Enter your content here...&#10;&#10;You can write multiple paragraphs.&#10;Each line break will be preserved in the PDF."
+                                      required></textarea>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> Tip: Use line breaks to separate paragraphs
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-lg" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border: none; padding: 15px;">
+                                <i class="fas fa-file-pdf"></i> Generate PDF
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Features Info -->
+            <div class="row mt-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card glass text-center p-3">
+                        <div class="icon-box mx-auto mb-2" style="width: 60px; height: 60px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h6>Instant Generation</h6>
+                        <small class="text-muted">Create PDFs in seconds</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card glass text-center p-3">
+                        <div class="icon-box mx-auto mb-2" style="width: 60px; height: 60px; background: linear-gradient(135deg, #28a745 0%, #218838 100%);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h6>Professional Format</h6>
+                        <small class="text-muted">Clean, readable layout</small>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card glass text-center p-3">
+                        <div class="icon-box mx-auto mb-2" style="width: 60px; height: 60px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h6>Auto Download</h6>
+                        <small class="text-muted">Ready to save & share</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control:focus {
+    background: rgba(255,255,255,0.15) !important;
+    border-color: rgba(255,255,255,0.4) !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,255,255,0.1) !important;
+    color: white !important;
+}
+.form-control::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+</style>
+{% endblock %}

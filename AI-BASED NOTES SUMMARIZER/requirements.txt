@@ -1,0 +1,10 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+python-dotenv
+PyPDF2
+youtube-transcript-api
+reportlab
+gTTS
+google-generativeai
+gunicorn

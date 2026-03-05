@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="text-center" style="margin-top: 120px;">
+    <h1 class="display-3 mb-4">AI-Based Notes Summarizer</h1>
+    <p class="lead mb-5">AI Study Assistant</p>
+    <div>
+        <a href="{{ url_for('user_login') }}" class="btn btn-primary btn-lg px-5 me-3">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-lg px-5">Register</a>
+    </div>
+</div>
+{% endblock %}

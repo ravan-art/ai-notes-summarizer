@@ -1,0 +1,66 @@
+============================================================
+  INSTALLATION COMMANDS
+============================================================
+
+STEP 1: Install Dependencies
+------------------------------------------------------------
+pip install -r requirements.txt
+
+OR if you want to see installation progress:
+------------------------------------------------------------
+pip install -r requirements.txt --verbose
+
+OR if you want to upgrade existing packages:
+------------------------------------------------------------
+pip install -r requirements.txt --upgrade
+
+============================================================
+
+STEP 2: Run Application
+------------------------------------------------------------
+python app.py
+
+============================================================
+
+ALTERNATIVE: Install packages one by one
+------------------------------------------------------------
+pip install Flask==3.0.0
+pip install Flask-Login==0.6.3
+pip install Flask-SQLAlchemy==3.1.1
+pip install Werkzeug==3.0.1
+pip install PyPDF2==3.0.1
+pip install gTTS==2.5.0
+pip install reportlab==4.0.7
+pip install youtube-transcript-api==0.6.2
+pip install python-dotenv==1.0.0
+pip install google-generativeai==0.3.2
+pip install pytesseract==0.3.10
+pip install Pillow==10.0.0
+
+============================================================
+
+STEP 3: Install Tesseract OCR (Required for Image/PDF Scanning)
+------------------------------------------------------------
+1. Download installer: https://github.com/UB-Mannheim/tesseract/wiki
+2. Run the .exe file
+3. IMPORTANT: Install in default location (C:\Program Files\Tesseract-OCR)
+   so the app can find it automatically.
+
+============================================================
+
+VERIFICATION:
+------------------------------------------------------------
+To check if everything is installed correctly, run:
+python check_install.py
+
+============================================================
+
+TROUBLESHOOTING:
+------------------------------------------------------------
+If you get permission error, use:
+pip install -r requirements.txt --user
+
+If pip is not recognized, use:
+python -m pip install -r requirements.txt
+
+============================================================

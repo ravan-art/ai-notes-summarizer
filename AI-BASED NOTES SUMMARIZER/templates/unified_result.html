@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}AI Results - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-check-circle text-success"></i> AI Processing Complete!</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        {% if summary %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-align-left"></i> Summary</h5>
+                <p>{{ summary }}</p>
+                {% if keywords %}
+                <hr>
+                <h6><i class="fas fa-key"></i> Keywords:</h6>
+                <div>
+                    {% for keyword in keywords %}
+                    <span class="badge bg-primary me-2 mb-2">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if quiz_questions %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-question-circle"></i> Quiz ({{ quiz_questions|length }} Questions)</h5>
+                <div id="quizContainer">
+                    {% for q in quiz_questions %}
+                    <div class="mb-4 p-3 border rounded">
+                        <h6>{{ loop.index }}. {{ q.question }}</h6>
+                        <div class="quiz-options">
+                            {% for option in q.options %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="q{{ loop.index0 }}" id="q{{ loop.index0 }}_{{ loop.index }}" value="{{ option }}" data-answer="{{ q.answer }}">
+                                <label class="form-check-label" for="q{{ loop.index0 }}_{{ loop.index }}">{{ option }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="btn btn-success" onclick="checkQuiz()"><i class="fas fa-check"></i> Submit Quiz</button>
+                <div id="quizResult" class="mt-3"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if flashcards %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-layer-group"></i> Flashcards ({{ flashcards|length }} Cards)</h5>
+                <div id="flashcardContainer">
+                    {% for fc in flashcards %}
+                    <div class="flashcard mb-3 p-4 border rounded text-center" style="cursor:pointer; min-height:150px;" onclick="flipCard(this)">
+                        <div class="flashcard-front">
+                            <h5>{{ fc.question }}</h5>
+                            <small class="text-muted">Click to reveal answer</small>
+                        </div>
+                        <div class="flashcard-back" style="display:none;">
+                            <p>{{ fc.answer }}</p>
+                            <small class="text-muted">Click to see question</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if enable_qa %}
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-comments"></i> Ask Questions About Your Content</h5>
+                <div id="qaHistory" class="mb-3" style="max-height:400px; overflow-y:auto;"></div>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="userQuestion" placeholder="Ask a question about the content...">
+                    <button class="btn btn-primary" onclick="askQuestion()"><i class="fas fa-paper-plane"></i> Ask</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle"></i> Summary</h5>
+                <ul class="list-unstyled">
+                    {% if summary %}<li><i class="fas fa-check text-success"></i> Summary Generated</li>{% endif %}
+                    {% if quiz_questions %}<li><i class="fas fa-check text-success"></i> {{ quiz_questions|length }} Quiz Questions</li>{% endif %}
+                    {% if flashcards %}<li><i class="fas fa-check text-success"></i> {{ flashcards|length }} Flashcards</li>{% endif %}
+                    {% if enable_qa %}<li><i class="fas fa-check text-success"></i> Q&A Enabled</li>{% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-tools"></i> Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('export_pdf', note_id=note_id) }}" class="btn btn-secondary">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                    <button class="btn btn-warning" onclick="generateAudio()">
+                        <i class="fas fa-volume-up"></i> Generate Audio
+                    </button>
+                    <a href="{{ url_for('unified_input') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Analysis
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-info">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="audioPlayer" class="card shadow mb-4" style="display:none;">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-headphones"></i> Audio</h5>
+                <audio id="audioElement" controls class="w-100"></audio>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const noteId = {{ note_id }};
+const contentText = {{ content_text|tojson }};
+
+function flipCard(card) {
+    const front = card.querySelector('.flashcard-front');
+    const back = card.querySelector('.flashcard-back');
+    if (front.style.display !== 'none') {
+        front.style.display = 'none';
+        back.style.display = 'block';
+    } else {
+        front.style.display = 'block';
+        back.style.display = 'none';
+    }
+}
+
+function checkQuiz() {
+    let correct = 0;
+    let total = {{ quiz_questions|length if quiz_questions else 0 }};
+    
+    document.querySelectorAll('.quiz-options').forEach((optionGroup, index) => {
+        const selected = optionGroup.querySelector('input:checked');
+        if (selected && selected.value === selected.dataset.answer) {
+            correct++;
+            selected.parentElement.classList.add('text-success');
+        } else if (selected) {
+            selected.parentElement.classList.add('text-danger');
+        }
+    });
+    
+    const percentage = (correct / total * 100).toFixed(1);
+    document.getElementById('quizResult').innerHTML = `
+        <div class="alert alert-info">
+            <h5>Score: ${correct}/${total} (${percentage}%)</h5>
+        </div>
+    `;
+    
+    fetch('/submit_quiz', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({score: correct, total: total})
+    });
+}
+
+function askQuestion() {
+    const question = document.getElementById('userQuestion').value.trim();
+    if (!question) return;
+    
+    const qaHistory = document.getElementById('qaHistory');
+    qaHistory.innerHTML += `<div class="mb-2"><strong>You:</strong> ${question}</div>`;
+    
+    fetch('/ask_question', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question: question, content: contentText})
+    })
+    .then(r => r.json())
+    .then(data => {
+        qaHistory.innerHTML += `<div class="mb-3 p-2 bg-light rounded"><strong>AI:</strong> ${data.answer}</div>`;
+        qaHistory.scrollTop = qaHistory.scrollHeight;
+    });
+    
+    document.getElementById('userQuestion').value = '';
+}
+
+function generateAudio() {
+    fetch(`/audio/${noteId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('audioPlayer').style.display = 'block';
+                document.getElementById('audioElement').src = data.audio_url;
+            }
+        });
+}
+</script>
+{% endblock %}

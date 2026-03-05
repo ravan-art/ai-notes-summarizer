@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}AI Chatbot{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-center mb-4"><i class="fas fa-comments"></i> AI Study Chatbot</h3>
+                
+                <div id="chatHistory" style="height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9; margin-bottom: 20px;">
+                    <p class="text-muted text-center">Ask me anything about your studies!</p>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" class="form-control" id="userQuery" placeholder="Type your question..." onkeypress="if(event.key==='Enter') sendQuery()">
+                    <button class="btn btn-primary" onclick="sendQuery()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sendQuery() {
+    const query = document.getElementById('userQuery').value.trim();
+    if (!query) return;
+    
+    const chatHistory = document.getElementById('chatHistory');
+    chatHistory.innerHTML += `<div class="mb-3"><strong>You:</strong> ${query}</div>`;
+    
+    fetch('/chatbot', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query: query})
+    })
+    .then(r => r.json())
+    .then(data => {
+        let answerHtml = '<div class="mb-3 p-3 bg-white rounded"><strong>AI:</strong><ul class="mb-0 mt-2">';
+        data.points.forEach(point => {
+            answerHtml += `<li>${point}</li>`;
+        });
+        answerHtml += '</ul></div>';
+        chatHistory.innerHTML += answerHtml;
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    });
+    
+    document.getElementById('userQuery').value = '';
+}
+</script>
+{% endblock %}

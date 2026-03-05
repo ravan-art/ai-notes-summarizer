@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Video Summary - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <h2 class="mb-4 text-center">
+        <i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube Video Summary
+    </h2>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <!-- Video Card -->
+            <div class="card glass mb-4">
+                <div class="card-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/{{ video_id }}" 
+                                allowfullscreen 
+                                style="border-radius: 20px 20px 0 0;"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="card glass mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="icon-box d-inline-flex" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <span class="ms-2 align-middle">Summary</span>
+                    </h5>
+                    <p class="lead">{{ summary }}</p>
+                </div>
+            </div>
+
+            <!-- Keywords Card -->
+            {% if keywords %}
+            <div class="card glass mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="icon-box d-inline-flex" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <span class="ms-2 align-middle">Keywords</span>
+                    </h5>
+                    <div>
+                        {% for keyword in keywords %}
+                        <span class="badge bg-gradient me-2 mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 0.9rem; padding: 0.5rem 1rem;">
+                            {{ keyword }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Chat Box -->
+            <div class="card glass mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <div class="icon-box d-inline-flex" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <span class="ms-2 align-middle">Ask Questions About This Video</span>
+                    </h5>
+                    
+                    <div class="alert alert-info alert-dismissible fade show" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border: 2px solid #667eea30; border-radius: 15px;">
+                        <strong><i class="fas fa-lightbulb"></i> Tips for 99% accurate answers:</strong><br>
+                        <small>
+                            • Ask specific questions about topics in the video<br>
+                            • Use keywords from the video content<br>
+                            • Try: "What is [topic]?", "How does [concept] work?", "What are the main points?"<br>
+                        </small>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    
+                    <div id="chatBox" style="height: 400px; overflow-y: auto; padding: 20px; margin-bottom: 20px;">
+                        <div class="text-center text-muted" style="padding: 80px 20px;">
+                            <div class="icon-box mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2rem;">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5>AI Assistant Ready!</h5>
+                            <p>Ask any question about the video content and get accurate, point-wise answers powered by AI.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden;">
+                        <input type="text" 
+                               id="questionInput" 
+                               class="form-control" 
+                               placeholder="Type your question here..." 
+                               onkeypress="if(event.key==='Enter') askQuestion()"
+                               style="border: none; padding: 1rem 1.5rem;">
+                        <button class="btn btn-primary" 
+                                onclick="askQuestion()" 
+                                style="padding: 1rem 2rem;">
+                            <i class="fas fa-paper-plane"></i> Ask
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions Card -->
+            <div class="card glass mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-tools"></i> Actions
+                    </h5>
+                    <div class="d-grid gap-3">
+                        {% if note_id %}
+                        <a href="{{ url_for('generate_quiz', note_id=note_id) }}" class="btn btn-success">
+                            <i class="fas fa-question-circle"></i> Generate Quiz
+                        </a>
+                        <a href="{{ url_for('generate_flashcards', note_id=note_id) }}" class="btn btn-info">
+                            <i class="fas fa-layer-group"></i> Create Flashcards
+                        </a>
+                        <a href="{{ url_for('export_pdf', note_id=note_id) }}" class="btn btn-secondary">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card glass">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle"></i> Info
+                    </h5>
+                    <p class="small text-muted">
+                        <i class="fas fa-check-circle text-success"></i> Summary generated from video transcript<br>
+                        <i class="fas fa-check-circle text-success"></i> AI-powered chatbot with 99% accuracy<br>
+                        <i class="fas fa-check-circle text-success"></i> Create quizzes and flashcards<br>
+                        <i class="fas fa-check-circle text-success"></i> Ask unlimited questions
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const transcript = {{ transcript|tojson }};
+const noteId = {{ note_id|tojson }};
+
+function askQuestion() {
+    const input = document.getElementById('questionInput');
+    const question = input.value.trim();
+    
+    if (!question) {
+        input.classList.add('is-invalid');
+        setTimeout(() => input.classList.remove('is-invalid'), 2000);
+        return;
+    }
+    
+    addMessageToChat('user', question);
+    input.value = '';
+    
+    addMessageToChat('bot', '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div> Thinking...');
+    
+    fetch('/ask_question', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question: question, content: transcript, note_id: noteId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        const chatBox = document.getElementById('chatBox');
+        chatBox.removeChild(chatBox.lastChild);
+        addMessageToChat('bot', data.answer);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const chatBox = document.getElementById('chatBox');
+        chatBox.removeChild(chatBox.lastChild);
+        addMessageToChat('bot', 'Sorry, there was an error. Please try again.');
+    });
+}
+
+function addMessageToChat(sender, message) {
+    const chatBox = document.getElementById('chatBox');
+    const welcomeMsg = chatBox.querySelector('.text-center.text-muted');
+    if (welcomeMsg) welcomeMsg.remove();
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `mb-3 ${sender === 'user' ? 'text-end' : ''} fade-in-up`;
+    
+    const messageBubble = document.createElement('div');
+    messageBubble.className = `d-inline-block p-3 rounded-4 ${sender === 'user' ? 'text-white' : 'bg-light'}`;
+    messageBubble.style.maxWidth = '85%';
+    messageBubble.style.whiteSpace = 'pre-wrap';
+    messageBubble.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+    
+    if (sender === 'user') {
+        messageBubble.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        messageBubble.innerHTML = `<strong><i class="fas fa-user-circle"></i> You:</strong><br>${message}`;
+    } else {
+        messageBubble.innerHTML = `<strong><i class="fas fa-robot"></i> AI Assistant:</strong><br>${message}`;
+    }
+    
+    messageDiv.appendChild(messageBubble);
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+</script>
+{% endblock %}

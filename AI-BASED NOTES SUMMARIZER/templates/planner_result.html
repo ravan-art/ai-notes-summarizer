@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Study Plan - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-calendar-check text-success"></i> Your Personalized Study Plan
+                </h3>
+                
+                <div class="alert alert-info">
+                    <strong>Total Days Available:</strong> {{ total_days }} days
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>#</th>
+                                <th>Topic</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Duration (Days)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in plan %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><strong>{{ item.topic }}</strong></td>
+                                <td>{{ item.start_date }}</td>
+                                <td>{{ item.end_date }}</td>
+                                <td><span class="badge bg-primary">{{ item.days }} days</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('planner') }}" class="btn btn-warning">Create Another Plan</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

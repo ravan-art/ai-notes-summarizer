@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Study Planner - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-calendar-alt text-warning"></i> Study Planner
+                </h3>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="syllabus" class="form-label">Syllabus Topics (comma-separated)</label>
+                        <textarea class="form-control" id="syllabus" name="syllabus" rows="5" 
+                                  placeholder="e.g., Data Structures, Algorithms, Database, Operating Systems, Networks" required></textarea>
+                        <small class="text-muted">Enter topics separated by commas</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exam_date" class="form-label">Exam Date</label>
+                        <input type="date" class="form-control" id="exam_date" name="exam_date" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="fas fa-magic"></i> Generate Study Plan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

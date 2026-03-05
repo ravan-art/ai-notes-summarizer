@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz - AI-Based Notes Summarizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-question-circle text-success"></i> Quiz Time!
+                </h3>
+                
+                <div id="quizContainer">
+                    {% for q in questions %}
+                    {% set outer_loop = loop.index %}
+                    <div class="question-card mb-4 p-3 border rounded">
+                        <h5>Question {{ outer_loop }}</h5>
+                        <p>{{ q.question }}</p>
+                        <div class="options">
+                            {% for option in q.options %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question_{{ outer_loop }}" 
+                                       value="{{ option }}" data-correct="{{ q.correct }}" id="q{{ outer_loop }}_opt{{ loop.index }}">
+                                <label class="form-check-label" for="q{{ outer_loop }}_opt{{ loop.index }}">
+                                    {{ option }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <button class="btn btn-success w-100" onclick="submitQuiz()">
+                    <i class="fas fa-check"></i> Submit Quiz
+                </button>
+
+                <div id="result" class="mt-4" style="display:none;">
+                    <div class="alert alert-info">
+                        <h4>Your Score: <span id="score"></span></h4>
+                        <canvas id="scoreChart" width="400" height="200"></canvas>
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function submitQuiz() {
+    let score = 0;
+    let total = {{ questions|length }};
+    
+    document.querySelectorAll('.question-card').forEach((card, index) => {
+        const selected = card.querySelector('input[type="radio"]:checked');
+        if (selected) {
+            const correct = selected.dataset.correct;
+            if (selected.value === correct) {
+                score++;
+                card.style.backgroundColor = '#d4edda';
+            } else {
+                card.style.backgroundColor = '#f8d7da';
+            }
+        }
+    });
+
+    // Save to database
+    fetch('/submit_quiz', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({score: score, total: total})
+    });
+
+    // Display result
+    document.getElementById('score').textContent = `${score} / ${total}`;
+    document.getElementById('result').style.display = 'block';
+    
+    // Chart
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Correct', 'Incorrect'],
+            datasets: [{
+                data: [score, total - score],
+                backgroundColor: ['#28a745', '#dc3545']
+            }]
+        }
+    });
+}
+</script>
+{% endblock %}
